@@ -14,11 +14,14 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  prepare:
+  build:
     working_directory: ~/repo
-    executor: gcp-cli/default
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    executor: my-executor
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      - checkout
       - gcp-cli/install:
           version: 360.0.0
       - run:
@@ -42,14 +45,7 @@ jobs:
           command: |
             gcloud spanner databases create testdb --instance=test-instance \
               --ddl='CREATE TABLE mytable (a INT64, b INT64) PRIMARY KEY(a)'
-  build:
-    working_directory: ~/repo
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    executor: my-executor
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
+
       - checkout
       - restore_cache:
           keys:
@@ -75,5 +71,4 @@ workflows:
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - prepare
       - build

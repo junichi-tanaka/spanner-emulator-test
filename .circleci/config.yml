@@ -18,6 +18,8 @@ jobs:
     working_directory: ~/repo
     executor: gcp-cli/default
     steps:
+      - gcp-cli/install:
+          version: 360.0.0
       - run:
           name: Show the verion of gcloud command
           command: |

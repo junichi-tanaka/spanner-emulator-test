@@ -8,7 +8,7 @@ services:
     environment:
      - SPANNER_EMULATOR_HOST=localhost:9010
   pubsub-emulator:
-    image: gcr.io/google.com/cloudsdktool/cloud-sdk:360.0.0
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:360.0.0-emulators
     command: ["gcloud", "beta", "emulators", "pubsub", "start", "--project=test-project", "--host-port=127.0.0.1:8085"]
     ports:
      - "127.0.0.1:8085:8085"

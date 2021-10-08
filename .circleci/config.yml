@@ -7,11 +7,21 @@ executors:
     docker:
       - image: circleci/golang:1.17
       - image: gcr.io/cloud-spanner-emulator/emulator:1.3.0
-      - image: google/cloud-sdk:360.0.0-alpine
+
+orbs:
+  gcp-cli: circleci/gcp-cli@2.2.0
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
+  prepare:
+    working_directory: ~/repo
+    executor: gcp-cli/default
+    steps:
+      - run:
+          name: Show the verion of gcloud command
+          command: |
+            gcloud version
   build:
     working_directory: ~/repo
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -21,10 +31,6 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - run:
-          name: Show the verion of gcloud command
-          command: |
-            gcloud version
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
@@ -49,4 +55,5 @@ workflows:
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
+      - prepare
       - build

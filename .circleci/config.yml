@@ -18,12 +18,30 @@ jobs:
     working_directory: ~/repo
     executor: gcp-cli/default
     steps:
+      - checkout
       - gcp-cli/install:
           version: 360.0.0
       - run:
           name: Show the verion of gcloud command
           command: |
             gcloud version
+      - run:
+          name: Setup Spanner Emulator
+          command: |
+            gcloud config configurations create emulator
+            gcloud config set auth/disable_credentials true
+            gcloud config set project your-project-id
+            gcloud config set api_endpoint_overrides/spanner http://localhost:9020/
+      - run:
+          name: Create emulator instance
+          command: |
+            gcloud spanner instances create test-instance \
+              --config=emulator-config --description="Test Instance" --nodes=1
+      - run:
+          name: Create database
+          command: |
+            gcloud spanner databases create testdb --instance=test-instance \
+              --ddl='CREATE TABLE mytable (a INT64, b INT64) PRIMARY KEY(a)'
   build:
     working_directory: ~/repo
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
